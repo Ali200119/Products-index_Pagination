@@ -35,6 +35,8 @@ namespace Fiorello.Areas.Admin.Controllers
 
             Paginate<ProductListVM> paginatedDatas = new Paginate<ProductListVM>(mappedDatas, page, pageCount);
 
+            ViewBag.Order = page * take - take;
+
             return View(paginatedDatas);
         }
 
@@ -65,7 +67,7 @@ namespace Fiorello.Areas.Admin.Controllers
 
         private async Task<int> GetPageCountAsync(int take)
         {
-            var productCount = await _productService.GetCountAsync();
+            int productCount = await _productService.GetCountAsync();
 
             return (int)Math.Ceiling((decimal)productCount / take);
         }

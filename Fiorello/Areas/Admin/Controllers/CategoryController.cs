@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fiorello.Areas.Admin.ViewModels;
 using Fiorello.Data;
+using Fiorello.Helpers;
 using Fiorello.Models;
 using Fiorello.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -25,11 +27,19 @@ namespace Fiorello.Areas.Admin.Controllers
 
 
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int take = 2)
         {
-            IEnumerable<Category> categories = await _categoryService.GetAll();
+            List<Category> categories = await _categoryService.GetPaginatedDataAsync(page, take);
 
-            return View(categories);
+            List<CategoryListVM> mappedDatas = GetMappedDatas(categories);
+
+            int pageCount = await GetPageCountAsync(take);
+
+            Paginate<CategoryListVM> paginatedDatas = new Paginate<CategoryListVM>(mappedDatas, page, pageCount);
+
+            ViewBag.Order = page * take - take;
+
+            return View(paginatedDatas);
         }
 
         [HttpGet]
@@ -120,6 +130,31 @@ namespace Fiorello.Areas.Admin.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+
+        private List<CategoryListVM> GetMappedDatas(List<Category> categories)
+        {
+            List<CategoryListVM> mappedDatas = new List<CategoryListVM>();
+
+            foreach (var category in categories)
+            {
+                CategoryListVM categoryVM = new CategoryListVM
+                {
+                    Id = category.Id,
+                    Name = category.Name
+                };
+
+                mappedDatas.Add(categoryVM);
+            }
+
+            return mappedDatas;
+        }
+
+        private async Task<int> GetPageCountAsync(int take)
+        {
+            int categoryCount = await _categoryService.GetCountAsync();
+            return (int)Math.Ceiling((decimal)categoryCount / take);
         }
     }
 }
