@@ -8,5 +8,7 @@ namespace Fiorello.Services.Interfaces
 		Task<Product> GetById(int? id);
 		Task<IEnumerable<Product>> GetAll();
         Task<Product> GetFullDataById(int? id);
+		Task<List<Product>> GetPaginatedDatasAsync(int page, int take);
+		Task<int> GetCountAsync();
     }
 }

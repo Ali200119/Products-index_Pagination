@@ -41,6 +41,8 @@ namespace Fiorello.Data
             modelBuilder.Entity<Expert>().HasQueryFilter(e => !e.SoftDelete);
             modelBuilder.Entity<SocialMedia>().HasQueryFilter(sm => !sm.SoftDelete);
             modelBuilder.Entity<Person>().HasQueryFilter(p => !p.SoftDelete);
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.SoftDelete);
+            modelBuilder.Entity<Category>().HasQueryFilter(c => !c.SoftDelete);
 
 
 
